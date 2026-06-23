@@ -1,0 +1,22 @@
+
+    
+    
+    
+    create or replace table `tennis_dev`.`silver`.`player_name_mapping` (`alias` string ,`canonical_player_id` string ,`alias_source` string )
+    
+    using delta
+  
+    
+    
+    
+    
+    
+  ;
+    -- dbt seed --
+    
+          insert overwrite `tennis_dev`.`silver`.`player_name_mapping` values
+          (%s,%s,%s),(%s,%s,%s),(%s,%s,%s),(%s,%s,%s)
+      
+
+;
+  

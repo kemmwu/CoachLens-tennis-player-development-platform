@@ -1,0 +1,73 @@
+{
+    "path_count": 288,
+    "parsed_path_count": 288,
+    "static_analysis_path_count": 13,
+    "static_analysis_parsed_path_count": 8,
+    "is_partial_parse_enabled": true,
+    "is_static_analysis_enabled": true,
+    "read_files_elapsed": 0.039045998000005966,
+    "load_macros_elapsed": 1.7088062210000032,
+    "parse_project_elapsed": 1.2195380710000023,
+    "patch_sources_elapsed": 0.02501695700000539,
+    "process_manifest_elapsed": 0.06174753900000951,
+    "load_all_elapsed": 3.1522630319999934,
+    "projects": [
+        {
+            "project_name": "tennis_analytics",
+            "elapsed": 1.194951164999992,
+            "parsers": [
+                {
+                    "parser": "model",
+                    "elapsed": 0.45668692499999963,
+                    "parsed_path_count": 13
+                },
+                {
+                    "parser": "test",
+                    "elapsed": 0.13210355000001073,
+                    "parsed_path_count": 3
+                },
+                {
+                    "parser": "seed",
+                    "elapsed": 0.1712617520000066,
+                    "parsed_path_count": 1
+                },
+                {
+                    "parser": "test",
+                    "elapsed": 0.42918101700000477,
+                    "parsed_path_count": 14
+                }
+            ],
+            "parsed_path_count": 31
+        },
+        {
+            "project_name": "dbt_databricks",
+            "elapsed": 0.005532416999997736,
+            "parsers": [],
+            "parsed_path_count": 0
+        },
+        {
+            "project_name": "dbt_spark",
+            "elapsed": 0.006696917000013514,
+            "parsers": [],
+            "parsed_path_count": 0
+        },
+        {
+            "project_name": "dbt",
+            "elapsed": 0.00552325900000028,
+            "parsers": [
+                {
+                    "parser": "doc",
+                    "elapsed": 0.00020825800000068284,
+                    "parsed_path_count": 1
+                }
+            ],
+            "parsed_path_count": 1
+        },
+        {
+            "project_name": "dbt_utils",
+            "elapsed": 0.006692719000000125,
+            "parsers": [],
+            "parsed_path_count": 0
+        }
+    ]
+}
