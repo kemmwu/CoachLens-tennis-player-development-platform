@@ -105,6 +105,8 @@ This project runs on **Databricks Premium** and is built to maximise Databricks-
 
 ## 3. Architecture Overview
 
+![CoachLens Architecture](docs/architecture.png)
+
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                          DATA SOURCES                               │
@@ -727,69 +729,4 @@ Full list in `/docs/known_limitations.md`. Key items:
 - Monthly estimated cost at this project scale: < $5
 - Full cost breakdown tracked in Databricks cost management UI
 
----
-
-## 15. Resume Bullet Points
-
-**Tennis Player Development Platform** | Personal Project | Jan 2026 – May 2026
-[GitHub](https://github.com/kemmwu/tennis-player-development-platform) · [Demo Video](#) · [Coach Dashboard](#)
-
-- Architected end-to-end Lakehouse on Databricks (Auto Loader, Lakeflow Connect + Confluent Kafka) ingesting SwingVision match screenshots, embedded coaching notes, and real-time student intake events — covering batch, micro-batch, and streaming ingestion patterns across 3 heterogeneous sources.
-
-- Built AI-augmented extraction pipeline using Claude API (multimodal Vision + text) to parse structured match and training statistics from SwingVision screenshots, achieving 95% field-level accuracy with confidence scoring, a Dead Letter Queue, and a Human-in-the-Loop review workflow on Streamlit.
-
-- Designed 13 dbt models across Bronze/Silver/Gold Medallion architecture with a custom Player Development Score metric combining win rate trends (40%), opponent strength weighting (30%), technique progression from LLM-parsed notes (20%), and break point conversion (10%) — formula fully documented in dbt model descriptions.
-
-- Implemented production engineering practices: GitHub Actions slim CI (`dbt state:modified+`), Databricks Lakehouse Monitoring, data contracts with validation notebook, Unity Catalog column-level lineage, and Databricks Workflows orchestration with SLA alerting.
-
-- Enabled stakeholder self-service via Databricks Genie natural language querying and a Streamlit coach dashboard with LLM-generated next session recommendations, backed by 6,000 match records and 12,000 training sessions across 50 modelled students.
-
----
-
-## 16. Interview Narrative
-
-### 30-Second Pitch
-
-> *"I'm a certified tennis coach — my students have won the Virginia State Championship — and I'm transitioning into Analytics Engineering. I identified a real pain point in my own coaching practice: there's no systematic way to track player development over time. Match stats live in SwingVision screenshots, coaching observations live in notes, and student intake data lives in forms — none of it connected, none of it queryable.
-So I built a production-grade Lakehouse on Databricks that ingests all three sources — using Claude API to extract structured statistics from the unstructured screenshots, Lakeflow Connect and Kafka for real-time intake streaming, and a full dbt Medallion architecture to transform everything into a Player Development Score and a coach dashboard with LLM-generated session recommendations.
-What I'm most proud of is that because I'm the domain expert and the engineer, every modeling decision is grounded in real coaching logic — the development score weights, the 7-day note-to-match linkage window, the alias resolution for player names. Four real students' data is in the platform today."*
-
----
-
-### Key Interview Q&A
-
-**Q: Walk me through your architecture.**
-
-Start with the architecture diagram above. Layer by layer: data source → ingestion → Bronze (PySpark/pandas) → AI extraction → HITL → Silver (dbt views) → Gold (dbt tables) → BI. For each layer explain *why* that design, not just *what* it does.
-
-**Q: Why PySpark notebooks for Bronze instead of Delta Live Tables?**
-
-DLT is a great framework but adds complexity and cost for a project at this scale. PySpark notebooks give full control over ingestion logic, are easier to debug, and cost nothing extra. The engineering concepts are identical — Auto Loader, file hash deduplication, schema enforcement, dead letter queue — just implemented explicitly rather than declaratively. In a larger team I would evaluate DLT seriously, and I can speak to that tradeoff.
-
-**Q: Why pandas batch for synthetic data ingestion instead of Auto Loader?**
-
-Unity Catalog has strict type enforcement. The existing Bronze tables had some columns stored with types inferred from real Claude API output (e.g. `aces` as void/null). The new synthetic Parquet files had integer types for those same columns. Auto Loader's schema caching made this conflict irresolvable without a full table rebuild. The pandas approach bypasses Auto Loader's schema inference entirely — read with pandas, cast explicitly to match existing Delta schema, then write. A pragmatic production choice.
-
-**Q: What is the Player Development Score?**
-
-A composite metric combining four components — win rate trend (40%), opponent strength-weighted win rate (30%), training technique accuracy trend (20%), and break point conversion (10%). The 40/30/20/10 weights come from my coaching experience: win rate is the most visible indicator, but it needs opponent context. Technique progression from training often predicts match improvement 2–3 weeks before it shows in results. Break point conversion is the highest-leverage micro-metric in competitive tennis.
-
-**Q: How do you handle LLM failures in production?**
-
-Three retries → Dead Letter Queue (`bronze.extraction_failures`) with `error_reason` → surfaced in HITL Streamlit app → coach reviews and corrects → correction saved to `gold.extraction_eval_set`. The loop never closes without measurement: a monthly evaluation notebook compares the latest prompt against the eval set and tracks field-level accuracy over time.
-
-**Q: What was the hardest technical decision?**
-
-Entity resolution for player names. A student appears as "Alex", "Alex Chen", or a Chinese name across different sources. I evaluated fuzzy matching, LLM-based resolution, and a manual mapping table. The manual seed table (`player_name_mapping.csv`) won — it's 100% accurate, fully auditable, and trivial to maintain for a coaching practice at this scale. Fuzzy matching introduces non-determinism. LLM resolution is overkill. The right tool for the right problem.
-
-**Q: What would you do differently?**
-
-Write data contracts before building staging models — I refactored the Silver layer mid-project when Bronze schema changed. Set the dbt target schema to a neutral value from day one to avoid the `silver_gold` naming inconsistency. And collect stakeholder feedback earlier — the dashboard was built before showing it to students. Their feedback would have changed the metrics displayed.
-
-**Q: If you had 3 more months, what would you add?**
-
-Multi-tenancy to support multiple coaches with per-coach data isolation in Unity Catalog. Automated prompt improvement based on eval set accuracy trends. A match opponent database to finally activate the opponent strength weight in the development score formula. Mobile-friendly coach interface for on-court use.
-
----
-
-*Last updated: May 2026*
+*Last updated: June 2026*
